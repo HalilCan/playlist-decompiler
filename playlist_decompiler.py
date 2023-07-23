@@ -1,7 +1,10 @@
 import subprocess
 import argparse
 import os
-import yt_dlp
+import shutil
+
+# Check which Python interpreter is available
+python_command = 'python3' if shutil.which('python3') else 'python'
 
 # Create the argument parser for this script
 parser = argparse.ArgumentParser()
@@ -12,30 +15,31 @@ parser.add_argument("txt_file", help='path to the text file with timestamps and 
 parser.add_argument("video_url", help="URL of the video to download.")
 args = parser.parse_args()
 
-# Get the video title
-ydl_opts = {}
-with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-    info_dict = ydl.extract_info(args.video_url, download=False)
-    video_title = info_dict.get('title', None)
-
 # Format the title to create filename (replace unallowed characters)
 video_title = "downloaded_playlist"
 audio_file = f"{video_title}.m4a"
 
-# Download video
-subprocess.run(['youtube-dl-nightly', '-o', f"{video_title}.%(ext)s", 'bestaudio[ext=m4a]/bestaudio/best', '--extract-audio', '--audio-quality', '0', '--xattrs', '--ignore-errors', args.video_url], check=True)
+try:
+    # Download video
+    subprocess.run(['youtube-dl-nightly', '-o', f"{video_title}.%(ext)s", 'bestaudio[ext=m4a]/bestaudio/best', '--extract-audio', '--audio-quality', '0', '--xattrs', '--ignore-errors', args.video_url])
+except subprocess.CalledProcessError as e:
+    print(f'Error occurred while running youtube-dl-nightly: {e}')
+    print(f'Command: {e.cmd}')
+    print(f'Exit status: {e.returncode}')
+    print(f'Command output: {e.output}')
 
-# Run the name_tilde_destroyer.sh to clean up the file name.
-subprocess.run(['sh', 'name_tilde_destroyer.sh'], check=True)
 
-# Run the opus_to_m4a_converter.sh to convert for ffmpeg manipulations.
-subprocess.run(['sh', 'opus_to_m4a_converter.sh'], check=True)
+# Run the name_tilde_destroyer.py to clean up the file name.
+subprocess.run([python_command, 'name_tilde_destroyer.py'], check=True)
+
+# Run the opus_to_m4a_converter.py to convert for ffmpeg manipulations.
+subprocess.run([python_command, 'opus_to_m4a_converter.py'], check=True)
 
 # Run single_file_playlist_splitter.py
-subprocess.run(['python3', 'single_file_playlist_splitter.py', audio_file, args.txt_file], check=True)
+subprocess.run([python_command, 'single_file_playlist_splitter.py', audio_file, args.txt_file], check=True)
 
-# Run metadata_buster_edit_me.py
-command = ['python3', 'metadata_buster_edit_me.py']
+# Compose command for and run metadata_buster_edit_me.py
+command = [python_command, 'metadata_buster_edit_me.py']
 
 if args.approve:
     command.append('-a')

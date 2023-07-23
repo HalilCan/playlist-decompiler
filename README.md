@@ -8,7 +8,6 @@
 Before running Playlist Decompiler, make sure to install the following 
 prerequisites:
 
-- yt-dlp
 - youtube-dl-nightly
 - ffmpeg
 
@@ -35,6 +34,7 @@ video_url: URL of the video to download.
 - `-a, --approve`: Approve each metadata change. Typing $f instead of the new title, if you are asked, is a shorthand for making the title the filename.
 - `-f, --folder`: Use the last folder's name as the artist name.
 - `-d DIRECTORY, --directory DIRECTORY`: Specify the directory containing the files. By default, it's the current working directory.
+- `-h`: Optional. Displays the help text.
 
 ## Contributing
 
