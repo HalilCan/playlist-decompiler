@@ -82,5 +82,7 @@ for start, end, song_name in timestamps:
     #part.export(f"{song_name}.{audio_format}", format=audio_format)
     # because for some reason just exporting won't work.
     subprocess.run(["ffmpeg", "-i", f"{song_name}.wav", "-c:a", "aac", f"{song_name}.m4a"])
+    # Delete the original WAV file
+    os.remove(f"{song_name}.wav")
 
 
