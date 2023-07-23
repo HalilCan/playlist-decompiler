@@ -85,4 +85,6 @@ for start, end, song_name in timestamps:
     # Delete the original WAV file
     os.remove(f"{song_name}.wav")
 
+os.remove(f"{args.audio_file}")
+
 
